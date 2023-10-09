@@ -1,23 +1,19 @@
+import datetime
+from asyncio import run
 from typing import Union, Annotated
+from logic.currency_logic import CurrencyTransformation
+import iso4217parse
 
 import httpx
 import uvicorn
-import telebot
 
 import asyncio
 from fastapi import FastAPI, File, UploadFile, Form
 from pydantic import BaseModel, EmailStr, json
 from starlette import status, requests
+import json
 
 app = FastAPI()
-
-
-class Item(BaseModel):
-    name: str
-    description: str | None = None
-    price: float
-    tax: float | None = None
-    tags: list[str] = []
 
 
 @app.get("/")
@@ -25,56 +21,14 @@ async def root():
     return {"message": "Hello_world"}
 
 
-# @app.get("/items/{item_id}")
-# async def reed_items(item_id: int):
-#     return {"item_id": item_id}
-
-
-# @app.post("/items/")
-# async def create_item(item: Item) -> Item:
-#     return item
-
-
-@app.get("/items/")
-async def reed_items() -> list[Item]:
-    return [
-        Item(name="Portal Gun", price=42.0),
-        Item(name="Portal Gun", price=42.0, tax=10.0, description="Some description"),
-    ]
-
-
-class BaseItem(BaseModel):
-    description: str
-    type: str
-
-
-class CarItem(BaseItem):
-    type: str = "car"
-
-
-class PlaneItem(BaseItem):
-    type: str = "plane"
-    size: int
-
-
-items = {
-    "item1": {"description": "All my friends drive a low rider", "type": "car"},
-    "item2": {
-        "description": "Music is my aeroplane, it's my aeroplane",
-        "type": "plane",
-        "size": 5,
-    },
-}
-
-
-@app.get("/items/{item_id}", response_model=Union[PlaneItem, CarItem])
-async def read_item(item_id: str):
-    return items[item_id]
-
-
 @app.post("/items/", status_code=status.HTTP_201_CREATED)
 async def create_item(name: str):
     return {"name": name}
+
+
+PRIVATBANK_API_URL = "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11"
+MONOBANK_API_URL = "https://api.monobank.ua/bank/currency"
+NBU_API_URL = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
 
 
 @app.post("/files/")
@@ -90,50 +44,58 @@ async def create_file(
     }
 
 
-BOT_TOKEN = "6406909658:AAEeFz40BapS4_SvHRQJGmqNyFQFpD3CYCo"
-PRIVATBANK_API_URL = "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11"
-BOT_NAME = "CurrencyParsingBot"
-
-
-@app.get('/get_exchange_course')
-async def get_exchange_course():
+@app.get('/get_privat_course')
+async def get_privat_course():
     client = httpx.AsyncClient()
     response = await client.get(PRIVATBANK_API_URL)
     return response.json()
 
 
-bot = telebot.TeleBot(BOT_TOKEN)
+@app.get('/get_mono_course')
+async def get_mono_course():
+    client = httpx.AsyncClient()
+    response = await client.get(MONOBANK_API_URL)
+    result = iso4217parse.by_code_num(980)
+    print(result.name, result.alpha3)
+    print(response.json())
+    print(type(response.json()))
+    return {"currency": response.json()}
 
 
-@bot.message_handler(commands=["hello"])
-def handle(message):
-    user = message
-    x = 5 + 3
-    x = 5 + 3
-    x = 5 + 3
-    exchange_course = get_exchange_course()
-    bot.send_message(chat_id=message.chat.id, text=f"Hi to {message.chat.username}, from Fastapi")
-    get_course(chat_id=message.chat.id)
+@app.get('/get_nbu_course')
+async def get_nbu_course():
+    client = httpx.AsyncClient()
+    response = await client.get(NBU_API_URL)
+    result = iso4217parse.parse(980)
+    for i in result:
+        print("*", i)
+    # print(result.name, result.alpha3, result.name)
+    print(response.json())
+    print(type(response.json()))
+    return {"currency": response.json()}
 
 
-def get_course(chat_id):
-    response = get_exchange_course()
-    text_response = response
-    bot.send_message(chat_id=chat_id, text=f"result: {str(text_response)}")
+@app.get('/get_all_course')
+async def get_all_course():
+    # start_time = datetime.datetime.now()
+    client = httpx.AsyncClient()
+    response_privat = await client.get(PRIVATBANK_API_URL)
+    response_mono = await client.get(MONOBANK_API_URL)
+    response_nbu = await client.get(NBU_API_URL)
+    privat = response_privat.json()
+    mono = response_mono.json()
+    nbu = response_nbu.json()
+    banks_data = (nbu, mono, privat)
+    currency = CurrencyTransformation(nbu, mono, privat).currency
+    # time_delta = datetime.datetime.now()-start_time
+    # print("Execution time of async def,  in seconds: ", time_delta.total_seconds())
+    return currency
 
-
-@bot.message_handler(commands=["get_course"])
-def course_handle(message):
-    bot.send_message(message.chat.id, "chose command from list:\n"
-                                      "/help - get list of commands,\n"
-                                      "/get_exchange_course - get actual exchange course from all banks")
-
-
-# bot.polling()
 
 if __name__ == "__main__":
     # uvicorn.run(app="main:app", reload=True)
     uvicorn.run(app="main:app", port=8888, reload=True)
+    # uvicorn.run(app="main_bot:bot", port=9999, reload=True)
 
     """
     From command line$ uvicorn main:app --host 192.168.0.165 --port 8000 --reload
