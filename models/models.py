@@ -2,11 +2,10 @@ from datetime import datetime
 
 from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey, JSON
 
-
 metadata = MetaData()
 
-role = Table(
-    "role",
+user_status = Table(
+    "user_status",
     metadata,
     Column("id", Integer, primary_key=True),
     Column('name', String, nullable=False),
@@ -15,13 +14,16 @@ role = Table(
 
 
 user = Table(
-    "role",
+    "user",
     metadata,
     Column("id", Integer, primary_key=True),
     Column('email', String, nullable=False),
+    Column('phone_number', String, nullable=False),
     Column('username', String, nullable=False),
+    Column('first_name', String(50)),
+    Column('last_name', String(50)),
     Column("registered_at", TIMESTAMP, default=datetime.utcnow),
-    Column("role_id", Integer, ForeignKey("roles.id")),
+    Column("user_status_id", Integer, ForeignKey("user_status.id")),
 )
 
 
