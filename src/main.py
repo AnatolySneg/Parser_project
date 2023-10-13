@@ -13,16 +13,12 @@ from pydantic import BaseModel, EmailStr, json
 from starlette import status, requests
 import json
 
-from ..config import DB_NAME
-
-x = DB_NAME
-
 app = FastAPI()
 
 
 @app.get("/")
 async def root():
-    return {"message": "Hello_world", "db_name": str(x)}
+    return {"message": "Hello_world"}
 
 
 @app.post("/items/", status_code=status.HTTP_201_CREATED)
