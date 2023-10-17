@@ -1,6 +1,9 @@
 import datetime
 from asyncio import run
 from typing import Union, Annotated
+
+from fastapi_users import FastAPIUsers
+
 from logic.currency_logic import CurrencyTransformation
 import iso4217parse
 
@@ -13,8 +16,47 @@ from pydantic import BaseModel, EmailStr, json
 from starlette import status, requests
 import json
 
+from src.auth.auth import auth_backend
+from src.auth.database import User
+from src.auth.manager import get_user_manager
+from src.auth.schemas import UserRead, UserCreate, UserUpdate
+
+fastapi_users = FastAPIUsers[User, int](
+    get_user_manager,
+    [auth_backend],
+)
+
 app = FastAPI()
 
+app.include_router(
+    fastapi_users.get_auth_router(auth_backend),
+    prefix="/auth/redis_strategiiii",
+    tags=["auth"],
+)
+
+app.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreate),
+    prefix="/auth",
+    tags=["auth"],
+)
+
+app.include_router(
+    fastapi_users.get_verify_router(UserRead),
+    prefix="/auth",
+    tags=["auth"],
+)
+
+app.include_router(
+    fastapi_users.get_reset_password_router(),
+    prefix="/auth",
+    tags=["auth"],
+)
+
+app.include_router(
+    fastapi_users.get_users_router(UserRead, UserUpdate),
+    prefix="/users",
+    tags=["users"],
+)
 
 @app.get("/")
 async def root():

@@ -42,15 +42,15 @@ engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
-async def create_db_and_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-        # TODO: """from fastapi-users documentation
-        #  https://fastapi-users.github.io/fastapi-users/12.1/configuration/databases/sqlalchemy/
-        #  In production, it's strongly recommended to setup a migration system to update your SQL schemas.
-        #  See Alembic. https://alembic.sqlalchemy.org/en/latest/"""
-
+# async def create_db_and_tables():
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)
+#
+#         # TODO: """from fastapi-users documentation
+#         #  https://fastapi-users.github.io/fastapi-users/12.1/configuration/databases/sqlalchemy/
+#         #  In production, it's strongly recommended to setup a migration system to update your SQL schemas.
+#         #  See Alembic. https://alembic.sqlalchemy.org/en/latest/"""
+#
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
