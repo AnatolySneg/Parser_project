@@ -9,6 +9,9 @@ DB_NAME = os.environ.get("DB_NAME")
 DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 
-RADIS_HOST = os.environ.get("RADIS_HOST")
+R_HOST = os.environ.get("R_HOST")
 
 MANAGER_SECRET = os.environ.get("MANAGER_SECRET")
+
+RADIS_HOST = os.environ.get("RADIS_HOST")
+RADIS_PORT = os.environ.get("RADIS_PORT")

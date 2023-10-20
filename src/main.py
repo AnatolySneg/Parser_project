@@ -58,6 +58,13 @@ app.include_router(
     tags=["users"],
 )
 
+
+async def startup_event():
+    keys = Keys()
+    await initialize_redis(keys)
+
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello_world"}

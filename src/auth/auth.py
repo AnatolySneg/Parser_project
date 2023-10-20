@@ -2,11 +2,11 @@ from fastapi_users.authentication import CookieTransport, AuthenticationBackend
 
 import redis.asyncio
 from fastapi_users.authentication import RedisStrategy
-from config import RADIS_HOST
+from config import RADIS_HOST, RADIS_PORT
 
 cookie_transport = CookieTransport(cookie_name="currency", cookie_max_age=3600)
 
-redis = redis.asyncio.from_url(RADIS_HOST, decode_responses=True)
+redis = redis.asyncio.from_url(f"redis://{RADIS_HOST}:{RADIS_PORT}", decode_responses=True)
 
 
 def get_redis_strategy() -> RedisStrategy:
