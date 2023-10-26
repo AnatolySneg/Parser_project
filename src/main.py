@@ -21,6 +21,7 @@ from src.auth.database import User
 from src.auth.manager import get_user_manager
 from src.auth.schemas import UserRead, UserCreate, UserUpdate
 
+
 fastapi_users = FastAPIUsers[User, int](
     get_user_manager,
     [auth_backend],
@@ -59,9 +60,9 @@ app.include_router(
 )
 
 
-async def startup_event():
-    keys = Keys()
-    await initialize_redis(keys)
+# async def startup_event():
+#     keys = Keys()
+#     await initialize_redis(keys)
 
 
 
