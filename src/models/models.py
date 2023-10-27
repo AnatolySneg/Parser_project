@@ -11,6 +11,7 @@ user_status = Table(
     Column('name', String, nullable=False),
     Column("permissions", JSON),
 )
+# TODO implement CoiceType from sqlalchemy-utils: https://sqlalchemy-utils.readthedocs.io/en/latest/data_types.html#module-sqlalchemy_utils.types.choice
 
 
 user = Table(
@@ -30,5 +31,3 @@ user = Table(
     Column("is_superuser", Boolean, default=False, nullable=False),
     Column("is_verified", Boolean, default=False, nullable=False),
 )
-
-
