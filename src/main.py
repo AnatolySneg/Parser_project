@@ -16,8 +16,8 @@ from pydantic import BaseModel, EmailStr, json
 from starlette import status, requests
 import json
 
-from src.auth.auth import auth_backend
-from src.auth.database import User
+from src.auth.base_config import auth_backend
+from src.auth.utils import User
 from src.auth.manager import get_user_manager
 from src.auth.schemas import UserRead, UserCreate, UserUpdate
 
