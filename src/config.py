@@ -14,3 +14,14 @@ MANAGER_SECRET = os.environ.get("MANAGER_SECRET")
 
 RADIS_HOST = os.environ.get("RADIS_HOST")
 RADIS_PORT = os.environ.get("RADIS_PORT")
+
+
+# Available Banks:
+NATIONAL_BANK = "national_bank"
+MONO_BANK = "mono_bank"
+PRIVAT_BANK = "privat_bank"
+
+# API URLs to parse currency data:
+PRIVATBANK_API_URL = "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11"
+MONOBANK_API_URL = "https://api.monobank.ua/bank/currency"
+NBU_API_URL = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"

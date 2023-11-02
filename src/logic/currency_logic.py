@@ -1,11 +1,16 @@
 from datetime import datetime
 import iso4217parse
+import httpx
+from src.config import PRIVATBANK_API_URL, MONOBANK_API_URL, NBU_API_URL
+from src.config import NATIONAL_BANK as nbu, PRIVAT_BANK as pb, MONO_BANK as mb
 
 
 class BankTransformation:
-    NATIONAL_BANK = "national_bank"
-    MONO_BANK = "mono_bank"
-    PRIVAT_BANK = "privat_bank"
+    NATIONAL_BANK = nbu
+    MONO_BANK = mb
+    PRIVAT_BANK = pb
+
+    All_BANKS = (NATIONAL_BANK, MONO_BANK, PRIVAT_BANK)
 
     PRIVAT_CURRENCY_DEFINITION = "ccy"
     MONO_CURRENCY_DEFINITION = "currencyCodeA"
@@ -76,9 +81,9 @@ class BankTransformation:
         MONO_BANK: iso4217parse.by_code_num,
     }
 
-    def _get_bank_definitions(self, bank: str):  # take a bank name from method below
-        result = self.BANK_DEFINITIONS[bank]  # returns dict with bank definitions to function below
-        return result
+    def _get_bank_definitions(self, bank: str) -> dict:  # takes a bank name from method below
+        bank_definitions = self.BANK_DEFINITIONS[bank]  # returns dict with bank definitions to method below
+        return bank_definitions
 
     def _get_transformed_data(self):
         valid_all_banks_data = {}
@@ -136,9 +141,21 @@ class CurrencyTransformation(BankTransformation):
                     break
         return defined_data
 
-    def __init__(self, *args):
-        self.data_list = args
-        self.data_source = self._source_identify()
+    def _requested_banks(self) -> list:
+        source_to_get_currency = [bank for bank in self.source_check if self.source_check[bank]]
+        return source_to_get_currency
+
+    def _source_to_parce(self):
+        source_to_get_currency: list = self._requested_banks()
+
+    def __init__(self, data_source):
+        # self.source_check: dict = banks.get_banks_currency_data()
+        # self.banks_to_parse = self._requested_banks()
+
+        # self.banks = banks
+        #
+        # self.data_list: list = args
+        self.data_source = data_source
         self.currency = BankTransformation(self.data_source).valid_result_data
 
 
@@ -194,6 +211,6 @@ if __name__ == "__main__":
         ]
     }
 
-    instance = CurrencyTransformation(privat_data, mono_data, nbu_data)
+    instance = CurrencyTransformation(banks='test banks', args=[privat_data, mono_data, nbu_data])
 
     # print(instance.data_source)

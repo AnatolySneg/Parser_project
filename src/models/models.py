@@ -1,10 +1,16 @@
 from datetime import datetime
+import json
 
 from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey, JSON, Boolean, ARRAY
 
 from src.database import Base
 from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import select, update, insert
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+from src.database import get_async_session
+from src.currency_parse.schemas import Currency
 
 metadata = MetaData()
 
@@ -55,13 +61,23 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
-currency_requests = Table(
-    "currency_requests",
+currency = Table(
+    "currency",
     metadata,
-    Column("id", Integer, unique=True, primary_key=True),
+    Column("id", Integer, unique=True, primary_key=True, autoincrement=True),
     Column("request_date", TIMESTAMP, default=datetime.utcnow()),
-    Column("requested_banks", ARRAY(String, dimensions=30)),
+    Column("requested_banks", ARRAY(String)),
     Column("request_source", String(50), default="UNKNOWN by default"),
     Column("currency_data", JSON),
     Column("user_id", Integer, ForeignKey(user.c.id), nullable=False),
 )
+
+
+async def add_currency_data(currency_data, user_id: int, session: AsyncSession):
+    requested_banks = [bank for bank in currency_data]
+    currency_data_json = json.dumps(currency_data)
+    currency_instance = Currency(requested_banks=requested_banks, currency_data=currency_data_json, user_id=user_id)
+    statement = insert(currency).values(**currency_instance.model_dump())
+    await session.execute(statement)
+    await session.commit()
+    return "currency table was updated successfully"

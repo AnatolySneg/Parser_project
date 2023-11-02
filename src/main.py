@@ -1,6 +1,7 @@
 import datetime
 from asyncio import run
 from typing import Union, Annotated
+from fastapi import Request
 
 from fastapi_users import FastAPIUsers
 
@@ -11,6 +12,7 @@ import httpx
 import uvicorn
 
 import asyncio
+from fastapi import Depends
 from fastapi import FastAPI, File, UploadFile, Form
 from pydantic import BaseModel, EmailStr, json
 from starlette import status, requests
@@ -20,7 +22,11 @@ from src.auth.base_config import auth_backend
 from src.auth.utils import User
 from src.auth.manager import get_user_manager
 from src.auth.schemas import UserRead, UserCreate, UserUpdate
-
+from src.currency_parse.schemas import Banks
+from src.models.models import add_currency_data
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.database import get_async_session
+from src.currency_parse.currency_router import router as currency_router
 
 fastapi_users = FastAPIUsers[User, int](
     get_user_manager,
@@ -28,6 +34,8 @@ fastapi_users = FastAPIUsers[User, int](
 )
 
 app = FastAPI()
+
+current_user = fastapi_users.current_user()
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),
@@ -59,11 +67,12 @@ app.include_router(
     tags=["users"],
 )
 
+app.include_router(currency_router)
+
 
 # async def startup_event():
 #     keys = Keys()
 #     await initialize_redis(keys)
-
 
 
 @app.get("/")
@@ -126,20 +135,61 @@ async def get_nbu_course():
 
 
 @app.get('/get_all_course')
-async def get_all_course():
-    # start_time = datetime.datetime.now()
-    client = httpx.AsyncClient()
-    response_privat = await client.get(PRIVATBANK_API_URL)
-    response_mono = await client.get(MONOBANK_API_URL)
-    response_nbu = await client.get(NBU_API_URL)
-    privat = response_privat.json()
-    mono = response_mono.json()
-    nbu = response_nbu.json()
-    banks_data = (nbu, mono, privat)
-    currency = CurrencyTransformation(nbu, mono, privat).currency
+async def get_all_course(banks: Banks, current_user: FastAPIUsers = Depends(current_user), session: AsyncSession = Depends(get_async_session), ):
+    currency: dict[str, dict] = CurrencyTransformation(banks).currency
+    statement_status = await add_currency_data(currency_data=currency, user_id=current_user.id, session=session)
+    print(statement_status, type(statement_status))
     # time_delta = datetime.datetime.now()-start_time
-    # print("Execution time of async def,  in seconds: ", time_delta.total_seconds())
-    return currency
+    return [statement_status, currency]
+
+
+# @app.get('/get_all_course')
+# async def get_all_course(banks: Banks, current_user: FastAPIUsers = Depends(current_user), session: AsyncSession = Depends(get_async_session), ):
+#     # start_time = datetime.datetime.now()
+#     included_banks = banks.model_dump()
+#     user_id = current_user.id
+#     client = httpx.AsyncClient()
+#     response_privat = await client.get(PRIVATBANK_API_URL)
+#     response_mono = await client.get(MONOBANK_API_URL)
+#     response_nbu = await client.get(NBU_API_URL)
+#     privat = response_privat.json()
+#     mono = response_mono.json()
+#     nbu = response_nbu.json()
+#     banks_data = (nbu, mono, privat)
+#     currency = CurrencyTransformation(banks).currency
+#     statement_status = await add_currency_data(currency_data=currency, user_id=user_id, session=session)
+#     print(type(currency))
+#     # time_delta = datetime.datetime.now()-start_time
+#     # print("Execution time of async def,  in seconds: ", time_delta.total_seconds())
+#     return [statement_status, currency]
+#
+
+def test_1(a, b, c):
+    return {'a': a,
+            'b': b,
+            'c': c}
+
+
+def test_2(d, e, f):
+    return {'d': d,
+            'e': e,
+            'f': f}
+
+
+def test_3(g, h, i=999):
+    return {'g': g,
+            'h': h,
+            'i': i}
+
+
+@app.get('/test_test')
+def test_test(one: dict = Depends(test_1), two: dict = Depends(test_2), three: dict = Depends(test_3)):
+    print('one', one)
+    print('two', two)
+    print('three', three)
+    return {'one': one,
+            'two': two,
+            'three': three}
 
 
 if __name__ == "__main__":
