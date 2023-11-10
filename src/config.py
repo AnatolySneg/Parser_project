@@ -21,7 +21,7 @@ NATIONAL_BANK = "national_bank"
 MONO_BANK = "mono_bank"
 PRIVAT_BANK = "privat_bank"
 
-# API URLs to parse currency data:
+# API URLs for currency data requests:
 PRIVATBANK_API_URL = "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11"
 MONOBANK_API_URL = "https://api.monobank.ua/bank/currency"
 NBU_API_URL = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
