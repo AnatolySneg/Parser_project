@@ -3,6 +3,8 @@ import iso4217parse
 import httpx
 from src.config import PRIVATBANK_API_URL, MONOBANK_API_URL, NBU_API_URL
 from src.config import NATIONAL_BANK as nbu, PRIVAT_BANK as pb, MONO_BANK as mb
+from src.config import CURRENCY_CODE as cc, BASE_CURRENCY_CODE as bcc
+from src.config import BUY_RATE as br, CROSS_RATE as cr, SELL_RATE as sr, ON_TIME as on_time
 
 
 class CurrencyTransformation:
@@ -35,12 +37,12 @@ class CurrencyTransformation:
 
     NATIONAL_BANK_RATE_DEFINITION = "rate"
 
-    CURRENCY_CODE = 'currency_code'
-    BASE_CURRENCY_CODE = 'base_currency_code'
-    BUY_RATE = 'buy_rate'
-    CROSS_RATE = 'cross_rate'
-    SELL_RATE = 'sale_rate'
-    ON_TIME = 'on_time'
+    CURRENCY_CODE = cc
+    BASE_CURRENCY_CODE = bcc
+    BUY_RATE = br
+    CROSS_RATE = cr
+    SELL_RATE = sr
+    ON_TIME = on_time
 
     BANK_DEFINITIONS = {
         PRIVAT_BANK: {
@@ -493,7 +495,7 @@ if __name__ == "__main__":
              'rateSell': 0}]
     }
 
-    income_cur_list = {'USD': True, 'EUR':  False, 'PLN': True, 'GBP': True, 'TRY': True, 'CHF': True}
+    income_cur_list = {'USD': True, 'EUR':  True, 'PLN': True, 'GBP': True, 'TRY': True, 'CHF': True}
 
     instance = CurrencyTransformation(income_data, income_cur_list)
     print(instance.currency_list)
