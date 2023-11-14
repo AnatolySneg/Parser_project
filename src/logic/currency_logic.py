@@ -502,6 +502,7 @@ if __name__ == "__main__":
     print('national_bank', instance.currency['national_bank'])
     print('privat_bank', instance.currency['privat_bank'])
     print('mono_bank', instance.currency['mono_bank'])
+    print('TOTAL', instance.currency)
 
 
 # {{'bank': {'AED': {'currency_code': 'AED', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 10.164,
