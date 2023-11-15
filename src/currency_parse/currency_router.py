@@ -1,18 +1,14 @@
 import datetime
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import select
 from src.auth.utils import User
 from src.auth.base_config import auth_backend
 from src.auth.manager import get_user_manager
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.logic.report_logic import XclCurrencyReport
-from src.models.models import currency, user
 from src.database import get_async_session
 from fastapi_users import FastAPIUsers
-import httpx
-from src.config import PRIVATBANK_API_URL, MONOBANK_API_URL, NBU_API_URL
 from src.logic.currency_logic import CurrencyTransformation
 from src.models.models import add_currency_data
 from src.currency_parse.schemas import Banks, CurrencyOption
@@ -30,12 +26,6 @@ router = APIRouter(
 current_user = fastapi_users.current_user()
 
 
-# @router.get("/")
-# async def get_currency(session: AsyncSession = Depends(get_async_session)):
-#     statment = select(currency)
-#     await session.execute(statment)
-
-
 @router.post("/get_all_course")
 async def get_all_currency(req_cur: CurrencyOption, banks: Banks, report: bool = False,
                            current_user: FastAPIUsers = Depends(current_user),
@@ -51,6 +41,3 @@ async def get_all_currency(req_cur: CurrencyOption, banks: Banks, report: bool =
     time_delta = datetime.datetime.now() - start_time
     print(time_delta)
     return currency
-
-# ORM - Object-relational model
-# SQL Injection

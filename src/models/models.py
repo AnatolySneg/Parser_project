@@ -8,8 +8,6 @@ from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import select, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
-from src.database import get_async_session
 from src.currency_parse.schemas import Currency
 
 metadata = MetaData()
@@ -21,7 +19,7 @@ user_status = Table(
     Column('name', String, nullable=False),
     Column("permissions", JSON),
 )
-# TODO implement CoiceType from sqlalchemy-utils: https://sqlalchemy-utils.readthedocs.io/en/latest/data_types.html#module-sqlalchemy_utils.types.choice
+# TODO: implement CoiceType from sqlalchemy-utils: https://sqlalchemy-utils.readthedocs.io/en/latest/data_types.html#module-sqlalchemy_utils.types.choice
 
 
 user = Table(

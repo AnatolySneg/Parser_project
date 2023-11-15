@@ -1,8 +1,5 @@
-from datetime import datetime
 from pydantic import BaseModel, Json
 import httpx
-import json
-from sqlalchemy import ARRAY, JSON
 from src.config import NATIONAL_BANK, PRIVAT_BANK, MONO_BANK
 from src.config import NBU_API_URL, MONOBANK_API_URL, PRIVATBANK_API_URL
 

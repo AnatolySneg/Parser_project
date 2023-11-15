@@ -4,79 +4,6 @@ from src.config import BUY_RATE, CROSS_RATE, SELL_RATE
 import os.path
 
 
-
-
-output_data = \
-    {
-        'national_bank': {
-            'USD': {'currency_code': 'USD', 'base_currency_code': 'UAH', 'buy_rate': 36.0407, 'cross_rate': 0.0,
-                    'sale_rate': 36.0407, 'on_time': '10.11.2023 15:24'},
-            'EUR': {'currency_code': 'EUR', 'base_currency_code': 'UAH', 'buy_rate': 38.4518, 'cross_rate': 0.0,
-                    'sale_rate': 38.4518, 'on_time': '10.11.2023 15:24'},
-            'CHF': {'currency_code': 'CHF', 'base_currency_code': 'UAH', 'buy_rate': 40.0474, 'cross_rate': 0.0,
-                    'sale_rate': 40.0474, 'on_time': '10.11.2023 15:24'},
-            'GBP': {'currency_code': 'GBP', 'base_currency_code': 'UAH', 'buy_rate': 44.1643, 'cross_rate': 0.0,
-                    'sale_rate': 44.1643, 'on_time': '10.11.2023 15:24'},
-            'PLN': {'currency_code': 'PLN', 'base_currency_code': 'UAH', 'buy_rate': 8.6108, 'cross_rate': 0.0,
-                    'sale_rate': 8.6108, 'on_time': '10.11.2023 15:24'},
-            'TRY': {'currency_code': 'TRY', 'base_currency_code': 'UAH', 'buy_rate': 1.264, 'cross_rate': 0.0,
-                    'sale_rate': 1.264, 'on_time': '10.11.2023 15:24'}},
-
-        'privat_bank': {
-            'USD': {'currency_code': 'USD', 'base_currency_code': 'UAH', 'buy_rate': 36.01, 'cross_rate': 0.0,
-                    'sale_rate': 37.45318, 'on_time': '10.11.2023 15:24'},
-            'EUR': {'currency_code': 'EUR', 'base_currency_code': 'UAH', 'buy_rate': 38.46, 'cross_rate': 0.0,
-                    'sale_rate': 40.48583, 'on_time': '10.11.2023 15:24'}},
-
-        'mono_bank': {
-            'USD': {'currency_code': 'USD', 'base_currency_code': 'UAH', 'buy_rate': 36.02, 'cross_rate': 0.0,
-                    'sale_rate': 37.2995, 'on_time': '10.11.2023 15:24'},
-            'EUR': {'currency_code': 'EUR', 'base_currency_code': 'UAH', 'buy_rate': 38.48, 'cross_rate': 0.0,
-                    'sale_rate': 39.8804, 'on_time': '10.11.2023 15:24'},
-            'CHF': {'currency_code': 'CHF', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 41.589,
-                    'sale_rate': 0.0, 'on_time': '10.11.2023 15:24'},
-            'GBP': {'currency_code': 'GBP', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 46.0707,
-                    'sale_rate': 0.0, 'on_time': '10.11.2023 15:24'},
-            'PLN': {'currency_code': 'PLN', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 9.0011,
-                    'sale_rate': 0.0, 'on_time': '10.11.2023 15:24'},
-            'TRY': {'currency_code': 'TRY', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 1.314,
-                    'sale_rate': 0.0,
-                    'on_time': '10.11.2023 15:24'}}}
-
-valid_data = \
-    {
-        'national_bank': {
-            'USD': {'currency_code': 'USD', 'base_currency_code': 'UAH', 'buy_rate': 36.0407, 'cross_rate': 0.0,
-                    'sale_rate': 36.0407, 'on_time': '13.11.2023 16:05'},
-            'EUR': {'currency_code': 'EUR', 'base_currency_code': 'UAH', 'buy_rate': 38.4518, 'cross_rate': 0.0,
-                    'sale_rate': 38.4518, 'on_time': '13.11.2023 16:05'},
-            'CHF': {'currency_code': 'CHF', 'base_currency_code': 'UAH', 'buy_rate': 40.0474, 'cross_rate': 0.0,
-                    'sale_rate': 40.0474, 'on_time': '13.11.2023 16:05'},
-            'GBP': {'currency_code': 'GBP', 'base_currency_code': 'UAH', 'buy_rate': 44.1643, 'cross_rate': 0.0,
-                    'sale_rate': 44.1643, 'on_time': '13.11.2023 16:05'},
-            'PLN': {'currency_code': 'PLN', 'base_currency_code': 'UAH', 'buy_rate': 8.6108, 'cross_rate': 0.0,
-                    'sale_rate': 8.6108, 'on_time': '13.11.2023 16:05'},
-            'TRY': {'currency_code': 'TRY', 'base_currency_code': 'UAH', 'buy_rate': 1.264, 'cross_rate': 0.0,
-                    'sale_rate': 1.264, 'on_time': '13.11.2023 16:05'}}, 'privat_bank': {
-        'USD': {'currency_code': 'USD', 'base_currency_code': 'UAH', 'buy_rate': 36.01, 'cross_rate': 0.0,
-                'sale_rate': 37.45318, 'on_time': '13.11.2023 16:05'},
-        'EUR': {'currency_code': 'EUR', 'base_currency_code': 'UAH', 'buy_rate': 38.46, 'cross_rate': 0.0,
-                'sale_rate': 40.48583, 'on_time': '13.11.2023 16:05'}}, 'mono_bank': {
-        'USD': {'currency_code': 'USD', 'base_currency_code': 'UAH', 'buy_rate': 36.02, 'cross_rate': 0.0,
-                'sale_rate': 37.2995, 'on_time': '13.11.2023 16:05'},
-        'EUR': {'currency_code': 'EUR', 'base_currency_code': 'UAH', 'buy_rate': 38.48, 'cross_rate': 0.0,
-                'sale_rate': 39.8804, 'on_time': '13.11.2023 16:05'},
-        'CHF': {'currency_code': 'CHF', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 41.589,
-                'sale_rate': 0.0, 'on_time': '13.11.2023 16:05'},
-        'GBP': {'currency_code': 'GBP', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 46.0707,
-                'sale_rate': 0.0, 'on_time': '13.11.2023 16:05'},
-        'PLN': {'currency_code': 'PLN', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 9.0011,
-                'sale_rate': 0.0, 'on_time': '13.11.2023 16:05'},
-        'TRY': {'currency_code': 'TRY', 'base_currency_code': 'UAH', 'buy_rate': 0.0, 'cross_rate': 1.314,
-                'sale_rate': 0.0,
-                'on_time': '13.11.2023 16:05'}}}
-
-
 class XclCurrencyReport:
     TABLE_START_LETTER = 66  # Letter "B" by ASCII
     TABLE_START_NUMBER = 2  # Digit "2"
@@ -119,9 +46,8 @@ class XclCurrencyReport:
         directory_path_exists = os.path.exists(directory_path)
         if not directory_path_exists:
             os.makedirs(directory_path)
-
-        file_nmae = datetime.now().strftime("%Y-%m-%d__%H-%M")
-        path = os.path.realpath(directory_path + f"/{file_nmae}.xlsx")
+        file_name = datetime.now().strftime("%Y-%m-%d__%H-%M")
+        path = os.path.realpath(directory_path + f"/{file_name}.xlsx")
 
         workbook = xlsxwriter.Workbook(path)
         worksheet = workbook.add_worksheet('Currency table')
@@ -139,15 +65,7 @@ class XclCurrencyReport:
         self.currency_data = currency_data
         self.user_id = user_id
         self.table_header = self._get_table_header()
-        self.table_end_letter_numeric = len(self.table_header)
+        self.table_end_letter_numeric = len(self.table_header) - 1
         self.table_end_number = self.TABLE_START_NUMBER + len(self.currency_data)
         self.data = self._get_data()
-
-
-if __name__ == '__main__':
-    instance = XclCurrencyReport(valid_data, 1)
-    print(instance.table_header)
-    print(instance.data)
-
-    instance.create_report_file()
 
