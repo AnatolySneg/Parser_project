@@ -50,7 +50,6 @@ app.include_router(
 app.include_router(currency_router)
 
 
-
 @app.post("/files/")
 async def create_file(
         file: Annotated[bytes, File()],

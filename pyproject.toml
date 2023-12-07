@@ -1,4 +1,9 @@
 [tool.pytest.ini_options]
 pythonpath = [".", "src"]
+#filterwarnings = [
+#"error",
+#"ignore::UserWarning",
+#'ignore',
+#]
 
 asyncio_mode="auto"
