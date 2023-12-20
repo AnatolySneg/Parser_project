@@ -58,6 +58,8 @@ def event_loop(request):
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
+
+
 """
 Solved ScopeMismatch with using pytest.yield_fixture decorator.
 """
@@ -88,3 +90,29 @@ client = TestClient(app)
 async def ac() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
+
+
+# @pytest.fixture(scope="session")  # `"function"`` (default), ``"class"``, ``"module"``, ``"package"`` or ``"session"``
+# async def authenticated_client(ac: AsyncClient):
+#     data_register = {
+#         "email": "user@example.com",
+#         "password": "string",
+#         "is_active": True,
+#         "is_superuser": False,
+#         "is_verified": False,
+#         "username": "VASILIJ",
+#         "user_status_id": 1
+#     }
+#     await ac.post("/auth/register",
+#                   json=data_register)
+#
+#     data_login = {
+#         "username": data_register["email"],
+#         "password": data_register["password"],
+#     }
+#
+#     response = await ac.post("/auth/redis_strategy/login",
+#                              data=data_login)
+#     token = response.json()
+#     ac.cookies["currency"] = f'cookie {token["access_token"]}'
+#     yield ac
