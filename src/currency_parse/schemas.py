@@ -45,3 +45,7 @@ class Banks(BaseModel):
         response_list: dict = {bank: (await client.get(request_list[bank])).json() for bank in check_list if
                                check_list[bank]}
         return response_list
+
+
+class CurrencyReport(BaseModel):
+    report: bool = False
