@@ -9,7 +9,6 @@ class TestUser:
             stmt = insert(user_status).values(id=1, name="newbie")
             await session.execute(stmt)
             await session.commit()
-
             query = select(user_status)
             result = await session.execute(query)
             assert result.all() == [(1, 'newbie', None)], "Роль добавилась"
@@ -67,7 +66,6 @@ class TestUser:
             'username': 'VASILIJ',
             'user_status_id': 1
         }
-        print("Printing test_get_current_user")
         assert response.json() == user
         assert response.status_code == 200
 
@@ -89,11 +87,10 @@ class TestUser:
             "report": {
                 "report": False
             }
-        }
+          }
 
         response = await ac.post(
             "/currency/get_all_course",
             json=some_data,
         )
-        print("check get currency")
         assert response.status_code == 200

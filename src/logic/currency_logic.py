@@ -104,12 +104,19 @@ class CurrencyTransformation:
                     continue
                 if currency_alpha_code not in self.currency_list:
                     continue
-                buy_rate = currency_data.get(bank_definitions[self.BUY_RATE])
+
                 try:
-                    cross_rate = currency_data.get(bank_definitions[self.CROSS_RATE])
+                    buy_rate = currency_data[bank_definitions[self.BUY_RATE]]
+                except KeyError:
+                    buy_rate = 0.00
+                try:
+                    cross_rate = currency_data[bank_definitions[self.CROSS_RATE]]
                 except KeyError:
                     cross_rate = 0.00
-                sell_rate = currency_data.get(bank_definitions[self.SELL_RATE])
+                try:
+                    sell_rate = currency_data[bank_definitions[self.SELL_RATE]]
+                except KeyError:
+                    sell_rate = 0.00
                 on_time = str(datetime.today().strftime("%d.%m.%Y %H:%M"))
                 valid_currency_data = {currency_alpha_code:
                     {
@@ -143,12 +150,11 @@ class CurrencyTransformation:
             ordered_data.update({bank: alpha})
         return ordered_data
 
-    def _get_requested_list(self):
-        return [cur for cur in self.requested_currency if self.requested_currency[cur]]
+    def _get_requested_list(self, requested_currency):
+        return [cur for cur in requested_currency if requested_currency[cur]]
 
     def __init__(self, data_source, requested_currency: dict[str, bool]):
-        self.requested_currency = requested_currency
-        self.currency_list = self._get_requested_list()
+        self.currency_list = self._get_requested_list(requested_currency)
         self.data_source = data_source
         self.unsorted_currency = self._get_transformed_data()
         self.currency = self._get_ordered_currency_data()
