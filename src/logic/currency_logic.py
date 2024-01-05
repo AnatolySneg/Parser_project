@@ -138,7 +138,7 @@ class CurrencyTransformation:
                     }
                     valid_all_banks_data[current_bank].update(valid_currency_data)
                 except KeyError:
-                    raise ValidationDataError(f"Sorry, {currency_data} currency data is unprocessable at this moment")
+                    raise ValidationDataError(f"Sorry, {current_bank} currency data is unprocessable at this moment")
         return valid_all_banks_data
 
     def _get_ordered_currency_data(self):

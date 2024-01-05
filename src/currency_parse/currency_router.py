@@ -33,12 +33,15 @@ async def get_all_currency(req_cur: CurrencyOption, banks: Banks,
                            session: AsyncSession = Depends(get_async_session),):
     start_time = datetime.datetime.now()
     data_source = await banks.get_banks_currency_data()
-    currency: dict[str, dict] = CurrencyTransformation(data_source, req_cur.get_requested_currency()).currency
-    statement_status = await add_currency_data(currency_data=currency, user_id=current_user.id, session=session)
-    if report.report:
-        report = XclCurrencyReport(currency_data=currency, user_id=current_user.id)
-        report.create_report_file()
-    print(statement_status, type(statement_status))
-    time_delta = datetime.datetime.now() - start_time
-    print(time_delta)
-    return currency
+    try:
+        currency: dict[str, dict] = CurrencyTransformation(data_source, req_cur.get_requested_currency()).currency
+        statement_status = await add_currency_data(currency_data=currency, user_id=current_user.id, session=session)
+        if report.report:
+            report = XclCurrencyReport(currency_data=currency, user_id=current_user.id)
+            report.create_report_file()
+        print(statement_status, type(statement_status))
+        time_delta = datetime.datetime.now() - start_time
+        print(time_delta)
+        return currency
+    except ValidationDataError as e:
+        return {"detail": str(e)}

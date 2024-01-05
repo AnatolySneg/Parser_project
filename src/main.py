@@ -1,7 +1,7 @@
 import uvicorn
-from typing import Annotated
+
 from fastapi_users import FastAPIUsers
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI
 from src.auth.base_config import auth_backend
 from src.auth.utils import User
 from src.auth.manager import get_user_manager
@@ -48,19 +48,6 @@ app.include_router(
 )
 
 app.include_router(currency_router)
-
-
-@app.post("/files/")
-async def create_file(
-        file: Annotated[bytes, File()],
-        fileb: Annotated[UploadFile, File()],
-        token: Annotated[str, Form()],
-):
-    return {
-        "file_size": len(file),
-        "token": token,
-        "fileb_content_type": fileb.content_type,
-    }
 
 
 if __name__ == "__main__":
