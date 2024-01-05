@@ -69,19 +69,19 @@ class TestUser:
         assert response.json() == user
         assert response.status_code == 200
 
-    async def test_get_all_currency(self, ac):
+    async def test_get_all_currency_valid_data(self, ac):
         some_data = {
             "req_cur": {
                 "USD": True,
                 "EUR": True,
-                "PLN": False,
-                "GBP": False,
-                "TRY": False,
-                "CHF": False
+                "PLN": True,
+                "GBP": True,
+                "TRY": True,
+                "CHF": True
             },
             "banks": {
-                "national_bank": False,
-                "mono_bank": False,
+                "national_bank": True,
+                "mono_bank": True,
                 "privat_bank": True
             },
             "report": {

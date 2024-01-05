@@ -1,5 +1,5 @@
 import datetime
-
+from src.exceptions.currency_logic_exceptions import ValidationDataError
 from fastapi import APIRouter, Depends, Request
 from src.auth.utils import User
 from src.auth.base_config import auth_backend

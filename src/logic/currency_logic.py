@@ -3,6 +3,7 @@ import iso4217parse
 from src.config import NATIONAL_BANK as nbu, PRIVAT_BANK as pb, MONO_BANK as mb
 from src.config import CURRENCY_CODE as cc, BASE_CURRENCY_CODE as bcc
 from src.config import BUY_RATE as br, CROSS_RATE as cr, SELL_RATE as sr, ON_TIME as on_time
+from src.exceptions.currency_logic_exceptions import ValidationDataError
 
 
 class CurrencyTransformation:
@@ -92,43 +93,52 @@ class CurrencyTransformation:
             current_bank_data = {current_bank: {}}
             valid_all_banks_data.update(current_bank_data)
             for currency_data in self.data_source[current_bank]:
-                currency = self.GET_CURRENCY_NAME[current_bank](currency_data[bank_definitions[self.CURRENCY_CODE]])
-                base_currency = self.GET_CURRENCY_NAME[current_bank](
-                    currency_data[bank_definitions[self.BASE_CURRENCY_CODE]])
-                if currency == base_currency and current_bank != self.MONO_BANK:
-                    base_currency = iso4217parse.by_alpha3("UAH")
+                try:
+                    currency = self.GET_CURRENCY_NAME[current_bank](currency_data[bank_definitions[self.CURRENCY_CODE]])
+                    base_currency = self.GET_CURRENCY_NAME[current_bank](
+                        currency_data[bank_definitions[self.BASE_CURRENCY_CODE]])
+                    if currency == base_currency and current_bank != self.MONO_BANK:
+                        base_currency = iso4217parse.by_alpha3("UAH")
 
-                currency_alpha_code = currency.alpha3
-                base_currency_alpha_code = base_currency.alpha3
-                if base_currency_alpha_code != 'UAH' and currency_alpha_code != 'UAH':
-                    continue
-                if currency_alpha_code not in self.currency_list:
-                    continue
+                    currency_alpha_code = currency.alpha3
+                    base_currency_alpha_code = base_currency.alpha3
+                    if base_currency_alpha_code != 'UAH' and currency_alpha_code != 'UAH':
+                        continue
+                    if currency_alpha_code not in self.currency_list:
+                        continue
 
-                try:
-                    buy_rate = currency_data[bank_definitions[self.BUY_RATE]]
-                except KeyError:
-                    buy_rate = 0.00
-                try:
-                    cross_rate = currency_data[bank_definitions[self.CROSS_RATE]]
-                except KeyError:
-                    cross_rate = 0.00
-                try:
-                    sell_rate = currency_data[bank_definitions[self.SELL_RATE]]
-                except KeyError:
-                    sell_rate = 0.00
-                on_time = str(datetime.today().strftime("%d.%m.%Y %H:%M"))
-                valid_currency_data = {currency_alpha_code:
-                    {
-                        self.CURRENCY_CODE: currency_alpha_code,
-                        self.BASE_CURRENCY_CODE: base_currency_alpha_code,
-                        self.BUY_RATE: float(buy_rate),
-                        self.CROSS_RATE: float(cross_rate),
-                        self.SELL_RATE: float(sell_rate),
-                        self.ON_TIME: on_time,
+                    try:
+                        buy_rate = currency_data[bank_definitions[self.BUY_RATE]]
+                    except KeyError:
+                        buy_rate = 0.00
+                    try:
+                        cross_rate = currency_data[bank_definitions[self.CROSS_RATE]]
+                    except KeyError:
+                        cross_rate = 0.00
+                    try:
+                        sell_rate = currency_data[bank_definitions[self.SELL_RATE]]
+                    except KeyError:
+                        sell_rate = 0.00
+
+                    if buy_rate != 0 and buy_rate == sell_rate:
+                        cross_rate = buy_rate
+                        buy_rate = 0.00
+                        sell_rate = 0.00
+
+                    on_time = str(datetime.today().strftime("%d.%m.%Y %H:%M"))
+                    valid_currency_data = {currency_alpha_code:
+                        {
+                            self.CURRENCY_CODE: currency_alpha_code,
+                            self.BASE_CURRENCY_CODE: base_currency_alpha_code,
+                            self.BUY_RATE: float(buy_rate),
+                            self.CROSS_RATE: float(cross_rate),
+                            self.SELL_RATE: float(sell_rate),
+                            self.ON_TIME: on_time,
+                        }
                     }
-                }
-                valid_all_banks_data[current_bank].update(valid_currency_data)
+                    valid_all_banks_data[current_bank].update(valid_currency_data)
+                except KeyError:
+                    raise ValidationDataError(f"Sorry, {currency_data} currency data is unprocessable at this moment")
         return valid_all_banks_data
 
     def _get_ordered_currency_data(self):
@@ -153,7 +163,7 @@ class CurrencyTransformation:
     def _get_requested_list(self, requested_currency):
         return [cur for cur in requested_currency if requested_currency[cur]]
 
-    def __init__(self, data_source, requested_currency: dict[str, bool]):
+    def __init__(self, data_source: dict, requested_currency: dict[str, bool]):
         self.currency_list = self._get_requested_list(requested_currency)
         self.data_source = data_source
         self.unsorted_currency = self._get_transformed_data()
